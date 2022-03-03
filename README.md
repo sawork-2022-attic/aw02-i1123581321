@@ -1,48 +1,17 @@
-# POS in Shell
+# POS shell
 
-The demo shows a simple POS system with command line interface. 
+## 设计理念
 
-To run
+按照三层架构设计该应用，对原本代码进行了较大的修改
 
-```shell
-mvn clean spring-boot:run
-```
+### 数据访问层
 
-Currently, it implements three commands which you can see using the `help` command.
+使用 Spring data JPA 进行数据访问，定义了描述商品的实体 `Product`，使用 Spring 提供的 repository 进行增删改查，数据库使用的是 h2 数据库的内存版本，也可以通过增加驱动以及在配置文件中配置数据源使用其他数据库
 
-```shell
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::                (v2.5.7)
- 
-shell:>help
-AVAILABLE COMMANDS
+### 服务层
 
-Built-In Commands
-        clear: Clear the shell screen.
-        exit, quit: Exit the shell.
-        help: Display help about available commands.
-        history: Display or save the history of previously run commands
-        script: Read and execute commands from a file.
-        stacktrace: Display the full stacktrace of the last error.
+用于实现主要的业务逻辑，提供了对于商品列表和购物车内容的查询功能，提供了增加，删除，修改购物车内商品的功能，该层依赖于数据访问层提供的数据库访问服务，同时参数的校验也是在该层完成的（检查商品是否存在，检查输入的商品数量是否合法等）
 
-Pos Command
-        a: Add a Product to Cart
-        n: New Cart
-        p: List Products
-```
+### 展示层
 
-Everytime a customer come to make a purchase, use `n` to create a new cart and then use `a ${productid} ${amount}` to add a product to the cart.
-
-Please make the POS system robust and fully functional by implementing more commands, for instance, print/empty/modify cart.
-
-Implementing a PosDB with real database is very much welcome. 
-
-Please use asciinema (https://asciinema.org) to record a demo and submit the url in QQ group. 
-
-And please elaborate your understanding in layered systems via this homework in your README.md.
-
+主要是基于 Spring shell 的用户接口，定义了多种命令，该层依赖于服务层提供的服务，将购物车内的内容格式化为字符串也是在该层完成的。该层不涉及业务逻辑，只是将用户输入的参数传递到服务层，同时将服务层返回的数据进行格式化后展示在控制台
